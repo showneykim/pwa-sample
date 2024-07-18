@@ -8,8 +8,8 @@
             "type": "image/png"
         }
     ],
-    "name": "PWA Sample",
-    "short_name": "PWA",
+    "name": "Maskit PWA Sample",
+    "short_name": "MASKIT_PWA",
     "start_url": "/index.html",
     "theme_color": "#000000"
 }
