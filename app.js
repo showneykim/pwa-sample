@@ -119,3 +119,71 @@ function bufferEncode(value) {
 function bufferDecode(data) {
     return Uint8Array.from(atob(data), c => c.charCodeAt(0)).buffer;
 }
+
+
+// Function to generate an asymmetric key pair
+async function generateKeyPair() {
+    const keyPair = await window.crypto.subtle.generateKey(
+        {
+            name: "RSA-OAEP",
+            modulusLength: 2048, // can be 1024, 2048, or 4096
+            publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+            hash: "SHA-256",
+        },
+        true, // whether the key is extractable (i.e. can be exported out of the browser)
+        ["encrypt", "decrypt"] // must be ["encrypt", "decrypt"] or ["sign", "verify"]
+    );
+    return keyPair;
+}
+
+// Function to store key pair in IndexedDB
+function storeKeyPair(keyPair) {
+    const dbName = "cryptoDB";
+    const request = indexedDB.open(dbName, 1);
+
+    request.onupgradeneeded = function (event) {
+        const db = event.target.result;
+        db.createObjectStore("keys", { keyPath: "id" });
+    };
+
+    request.onsuccess = function (event) {
+        const db = event.target.result;
+        const transaction = db.transaction("keys", "readwrite");
+        const store = transaction.objectStore("keys");
+
+        store.add({ id: "userKeyPair", key: keyPair }).onsuccess = function () {
+            displayKeyInfo(keyPair);
+        };
+
+        transaction.oncomplete = function () {
+            console.log("Transaction completed: database modification finished.");
+            db.close();
+        };
+    };
+
+    request.onerror = function (event) {
+        console.error("IndexedDB error:", event.target.error);
+    };
+}
+
+// Function to display key pair info
+function displayKeyInfo(keyPair) {
+    const infoElement = document.getElementById("key-info");
+    infoElement.innerHTML = `Key Pair Generated: <br> Public Key Type: ${keyPair.publicKey.type}`;
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById("generate-key-pair").addEventListener("click", async () => {
+        const keyPair = await generateKeyPair();
+        window.keyPair = keyPair; // Store key pair globally to use in other operations
+    });
+
+    document.getElementById("store-key-pair").addEventListener("click", () => {
+        if (window.keyPair) {
+            storeKeyPair(window.keyPair);
+        } else {
+            console.log("No key pair generated yet.");
+        }
+    });
+});
