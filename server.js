@@ -42,6 +42,35 @@ app.post('/sign-data', (req, res) => {
     });
 });
 
+function generateRandomChallenge() {
+    return crypto.randomBytes(32).toString('base64url');
+}
+
+app.get('/webauthn/register', (req, res) => {
+    // 사용자 등록을 위한 challenge 생성 및 사용자 정보 설정
+    const options = {
+        challenge: generateRandomChallenge(),
+        rp: { name: "Maskit Inc" },
+        user: {
+            id: "unique-user-id",  // 사용자를 식별하는 고유 ID
+            name: "user@example.com",
+            displayName: "User Example"
+        },
+        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+        timeout: 60000,
+        attestation: 'direct'
+    };
+    console.log(JSON.stringify(options, null, 2));
+    res.json(options);
+});
+
+app.post('/webauthn/response', (req, res) => {
+    // 공개키 등록 로직 구현
+    console.log(req.body);
+    res.json({ status: 'ok', message: 'Registration successful' });
+});
+
+
 // RSA 비대칭 키 쌍 생성
 function generateAsymmetricKeys() {
     const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
