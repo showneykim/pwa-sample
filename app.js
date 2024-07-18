@@ -56,59 +56,59 @@ document.getElementById('sign-btn').addEventListener('click', function () {
         });
 });
 
-document.getElementById('register-btn').addEventListener('click', function () {
-    if (!window.PublicKeyCredential) {
-        alert("WebAuthn is not supported in this browser.");
-        return;
-    }
+// document.getElementById('register-btn').addEventListener('click', function () {
+//     if (!window.PublicKeyCredential) {
+//         alert("WebAuthn is not supported in this browser.");
+//         return;
+//     }
 
-    // 서버로부터 challenge와 사용자 정보 등을 받아와야 함
-    fetch(`${server_url}/webauthn/register`, {
-        method: 'GET'
-    })
-        .then(response => response.json())
-        .then(options => {
-            // options를 ArrayBuffer로 변환
-            options.challenge = bufferDecode(options.challenge);
-            options.user.id = bufferDecode(options.user.id);
+//     // 서버로부터 challenge와 사용자 정보 등을 받아와야 함
+//     fetch(`${server_url}/webauthn/register`, {
+//         method: 'GET'
+//     })
+//         .then(response => response.json())
+//         .then(options => {
+//             // options를 ArrayBuffer로 변환
+//             options.challenge = bufferDecode(options.challenge);
+//             options.user.id = bufferDecode(options.user.id);
 
-            // WebAuthn API 호출
-            return navigator.credentials.create({
-                publicKey: options
-            });
-        })
-        .then(credential => {
-            // 서버에 공개키 등록
-            const publicKeyCredential = {
-                id: credential.id,
-                type: credential.type,
-                rawId: bufferEncode(credential.rawId),
-                response: {
-                    attestationObject: bufferEncode(credential.response.attestationObject),
-                    clientDataJSON: bufferEncode(credential.response.clientDataJSON)
-                }
-            };
+//             // WebAuthn API 호출
+//             return navigator.credentials.create({
+//                 publicKey: options
+//             });
+//         })
+//         .then(credential => {
+//             // 서버에 공개키 등록
+//             const publicKeyCredential = {
+//                 id: credential.id,
+//                 type: credential.type,
+//                 rawId: bufferEncode(credential.rawId),
+//                 response: {
+//                     attestationObject: bufferEncode(credential.response.attestationObject),
+//                     clientDataJSON: bufferEncode(credential.response.clientDataJSON)
+//                 }
+//             };
 
-            return fetch(`${server_url}/webauthn/response`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(publicKeyCredential)
-            });
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.status === 'ok') {
-                console.log('Registration successful!');
-            } else {
-                console.log('Registration failed:', result.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error during registration:', error);
-        });
-});
+//             return fetch(`${server_url}/webauthn/response`, {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json'
+//                 },
+//                 body: JSON.stringify(publicKeyCredential)
+//             });
+//         })
+//         .then(response => response.json())
+//         .then(result => {
+//             if (result.status === 'ok') {
+//                 console.log('Registration successful!');
+//             } else {
+//                 console.log('Registration failed:', result.message);
+//             }
+//         })
+//         .catch(error => {
+//             console.error('Error during registration:', error);
+//         });
+// });
 
 // ArrayBuffer를 Base64 문자열로 인코딩
 function bufferEncode(value) {
