@@ -28,10 +28,10 @@ document.getElementById('authenticate').addEventListener('click', async () => {
 
     try {
         const authResp = await SimpleWebAuthnBrowser.startAuthentication(opts);
-        const verificationResp = await fetch('/verify-authentication', {
+        const verificationResp = await fetch('http://localhost:3000/verify-authentication', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(authResp),
+            body: JSON.stringify({ authResp, opts }),
         });
         const verificationJSON = await verificationResp.json();
         if (verificationJSON.verified) {

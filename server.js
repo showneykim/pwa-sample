@@ -53,7 +53,8 @@ app.post('/sign-data', (req, res) => {
 });
 
 function generateRandomChallenge() {
-    return crypto.randomBytes(32).toString('base64url');
+    return 'Yi8LqGoDean_vud7p3bYh-POsUaP4x2sRLWG-60O3G0'
+    // return crypto.randomBytes(32).toString('base64url');
 }
 
 app.get('/webauthn/register', (req, res) => {
@@ -161,8 +162,8 @@ app.post('/verify-registration', async (req, res) => {
 });
 
 // Authentication Options Endpoint
-app.get('/generate-authentication-options', (req, res) => {
-    const options = generateAuthenticationOptions({
+app.get('/generate-authentication-options', async (req, res) => {
+    const options = await generateAuthenticationOptions({
         rpID: 'localhost',
         userVerification: 'preferred',
     });
@@ -173,12 +174,14 @@ app.get('/generate-authentication-options', (req, res) => {
 // Authentication Verification Endpoint
 app.post('/verify-authentication', async (req, res) => {
     const { body } = req;
-    const expectedChallenge = req.session.challenge;
+    // const expectedChallenge = req.session.challenge;
+    // const expectedChallenge = 'Yi8LqGoDean_vud7p3bYh-POsUaP4x2sRLWG-60O3G0'
+    const expectedChallenge = body.opts.challenge;
 
     const verification = await verifyAuthenticationResponse({
-        credential: body,
+        response: body.authResp,
         expectedChallenge,
-        expectedOrigin: 'http://localhost:3000',
+        expectedOrigin: 'http://localhost:8080',
         expectedRPID: 'localhost',
         authenticator: user.devices[0], // In a real scenario, match the credentialId with stored devices
     });
