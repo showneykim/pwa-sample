@@ -2,10 +2,17 @@ const express = require('express');
 const fs = require('fs-extra');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 
 const app = express();
 const port = 3000;
+
+// CORS 설정
+app.use(cors({
+    origin: 'http://localhost:8080',
+    credentials: true
+}));
 
 // bodyParser를 사용하여 JSON 요청을 파싱
 app.use(bodyParser.json());

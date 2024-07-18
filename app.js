@@ -32,3 +32,24 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('offline-time').textContent = `Offline since: ${offlineTime}`;
     }
 });
+
+document.getElementById('sign-btn').addEventListener('click', function () {
+    // 임시로 고정된 공개키 사용 예제
+    const publicKey = '클라이언트의 공개키 예시'; // 실제로는 WebAuthn 등을 통해 생성
+
+    fetch('http://localhost:3000/sign-data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ publicKey: publicKey })
+    })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('signed-data').textContent = `Signed Data: ${data.signature}`;
+        })
+        .catch(error => {
+            console.error('Error signing data:', error);
+            document.getElementById('signed-data').textContent = 'Error signing data.';
+        });
+});
