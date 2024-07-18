@@ -13,6 +13,7 @@ const {
 } = require('@simplewebauthn/server');
 const { isoUint8Array } = require('@simplewebauthn/server/helpers');
 
+const client_url = 'https://silly-beans-move.loca.lt'
 
 
 const app = express();
@@ -20,7 +21,7 @@ const port = 3030;
 
 // CORS 설정
 app.use(cors({
-    origin: 'http://localhost:8080',
+    origin: client_url,
     credentials: true
 }));
 
@@ -150,7 +151,7 @@ app.post('/verify-registration', async (req, res) => {
     const verification = await verifyRegistrationResponse({
         response: body.attResp,
         expectedChallenge,
-        expectedOrigin: 'http://localhost:8080',
+        expectedOrigin: client_url,
         expectedRPID: 'localhost',
     });
 
@@ -190,7 +191,7 @@ app.post('/verify-authentication', async (req, res) => {
     const verification = await verifyAuthenticationResponse({
         response: body.authResp,
         expectedChallenge,
-        expectedOrigin: 'http://localhost:8080',
+        expectedOrigin: client_url,
         expectedRPID: 'localhost',
         authenticator: user.devices[0], // In a real scenario, match the credentialId with stored devices
     });

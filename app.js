@@ -1,3 +1,5 @@
+const server_url = 'https://1665-183-100-197-18.ngrok-free.app'
+
 // 서비스 워커 등록 및 메시지 리스너 설정
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -37,7 +39,7 @@ document.getElementById('sign-btn').addEventListener('click', function () {
     // 임시로 고정된 공개키 사용 예제
     const publicKey = '클라이언트의 공개키 예시'; // 실제로는 WebAuthn 등을 통해 생성
 
-    fetch('http://localhost:3030/sign-data', {
+    fetch(`${server_url}/sign-data`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -61,7 +63,7 @@ document.getElementById('register-btn').addEventListener('click', function () {
     }
 
     // 서버로부터 challenge와 사용자 정보 등을 받아와야 함
-    fetch('http://localhost:3030/webauthn/register', {
+    fetch(`${server_url}/webauthn/register`, {
         method: 'GET'
     })
         .then(response => response.json())
@@ -87,7 +89,7 @@ document.getElementById('register-btn').addEventListener('click', function () {
                 }
             };
 
-            return fetch('http://localhost:3030/webauthn/response', {
+            return fetch(`${server_url}/webauthn/response`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
