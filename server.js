@@ -16,7 +16,7 @@ const { isoUint8Array } = require('@simplewebauthn/server/helpers');
 
 
 const app = express();
-const port = 3000;
+const port = 3030;
 
 // CORS 설정
 app.use(cors({
@@ -138,6 +138,7 @@ app.get('/generate-registration-options', async (req, res) => {
         userName: user.username,
     });
     req.session.challenge = options.challenge;
+    console.log(`🚀 User ${JSON.stringify(user, null, 2)} is generate-registration`)
     res.json(options);
 });
 
@@ -154,7 +155,14 @@ app.post('/verify-registration', async (req, res) => {
     });
 
     if (verification.verified) {
-        user.devices.push(verification.registrationInfo);
+        // user.devices.push(verification.registrationInfo);
+        user.devices.push({
+            credentialID: verification.registrationInfo.credentialID,
+            credentialPublicKey: verification.registrationInfo.credentialPublicKey,
+            counter: verification.registrationInfo.counter,
+            transports: verification.registrationInfo.transports
+        });
+        console.log(`🚀 User ${JSON.stringify(user, null, 2)} registered a device.`);
         res.json({ verified: true });
     } else {
         res.status(400).json({ verified: false });
@@ -168,6 +176,7 @@ app.get('/generate-authentication-options', async (req, res) => {
         userVerification: 'preferred',
     });
     req.session.challenge = options.challenge;
+    console.log(`🚀 User ${JSON.stringify(user, null, 2)} is generate-authentication`)
     res.json(options);
 });
 
@@ -187,6 +196,8 @@ app.post('/verify-authentication', async (req, res) => {
     });
 
     if (verification.verified) {
+        console.log(`🚀 User ${JSON.stringify(user, null, 2)} authenticated successfully`);
+        // user.devices[0].counter = body.authenticatorData.counter || 0;
         res.json({ verified: true });
     } else {
         res.status(400).json({ verified: false });

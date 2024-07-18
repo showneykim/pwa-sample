@@ -37,7 +37,7 @@ document.getElementById('sign-btn').addEventListener('click', function () {
     // 임시로 고정된 공개키 사용 예제
     const publicKey = '클라이언트의 공개키 예시'; // 실제로는 WebAuthn 등을 통해 생성
 
-    fetch('http://localhost:3000/sign-data', {
+    fetch('http://localhost:3030/sign-data', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -61,7 +61,7 @@ document.getElementById('register-btn').addEventListener('click', function () {
     }
 
     // 서버로부터 challenge와 사용자 정보 등을 받아와야 함
-    fetch('http://localhost:3000/webauthn/register', {
+    fetch('http://localhost:3030/webauthn/register', {
         method: 'GET'
     })
         .then(response => response.json())
@@ -87,7 +87,7 @@ document.getElementById('register-btn').addEventListener('click', function () {
                 }
             };
 
-            return fetch('http://localhost:3000/webauthn/response', {
+            return fetch('http://localhost:3030/webauthn/response', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
