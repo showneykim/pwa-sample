@@ -1,6 +1,6 @@
 // client.js
 
-const server_url = 'https://1665-183-100-197-18.ngrok-free.app'
+const server_url = 'https://4feb-183-100-197-18.ngrok-free.app'
 
 document.getElementById('register').addEventListener('click', async () => {
     const resp = await fetch(`${server_url}/generate-registration-options`);

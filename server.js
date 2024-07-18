@@ -13,7 +13,8 @@ const {
 } = require('@simplewebauthn/server');
 const { isoUint8Array } = require('@simplewebauthn/server/helpers');
 
-const client_url = 'https://silly-beans-move.loca.lt'
+const client_host = 'clear-pets-beam.loca.lt'
+const client_url = `https://${client_host}`
 
 
 const app = express();
@@ -134,7 +135,7 @@ let user = {
 app.get('/generate-registration-options', async (req, res) => {
     const options = await generateRegistrationOptions({
         rpName: 'Example RP',
-        rpID: 'localhost',
+        rpID: client_host,
         userID: isoUint8Array.fromUTF8String(user.id),
         userName: user.username,
     });
@@ -152,7 +153,7 @@ app.post('/verify-registration', async (req, res) => {
         response: body.attResp,
         expectedChallenge,
         expectedOrigin: client_url,
-        expectedRPID: 'localhost',
+        expectedRPID: client_host,
     });
 
     if (verification.verified) {
@@ -173,7 +174,7 @@ app.post('/verify-registration', async (req, res) => {
 // Authentication Options Endpoint
 app.get('/generate-authentication-options', async (req, res) => {
     const options = await generateAuthenticationOptions({
-        rpID: 'localhost',
+        rpID: client_host,
         userVerification: 'preferred',
     });
     req.session.challenge = options.challenge;
@@ -192,7 +193,7 @@ app.post('/verify-authentication', async (req, res) => {
         response: body.authResp,
         expectedChallenge,
         expectedOrigin: client_url,
-        expectedRPID: 'localhost',
+        expectedRPID: client_host,
         authenticator: user.devices[0], // In a real scenario, match the credentialId with stored devices
     });
 

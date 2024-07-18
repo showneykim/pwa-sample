@@ -1,4 +1,4 @@
-const server_url = 'https://1665-183-100-197-18.ngrok-free.app'
+
 
 // 서비스 워커 등록 및 메시지 리스너 설정
 if ('serviceWorker' in navigator) {
