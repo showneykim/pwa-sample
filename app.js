@@ -21,22 +21,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// // 서버 ping과 오프라인 상태 감지
-// setInterval(() => {
-//     fetch('https://google.com')
-//         .then(response => {
-//             // 서버가 응답하면 온라인 상태입니다
-//             console.log('Online!');
-//         })
-//         .catch(error => {
-//             // 서버가 응답하지 않으면 오프라인 상태로 간주합니다
-//             const offlineTime = new Date().toLocaleString();
-//             document.getElementById('offline-time').textContent = `Offline since: ${offlineTime}`;
-//             localStorage.setItem('offlineTime', offlineTime);
-//             console.log('Offline!');
-//         });
-// }, 1000);  // 1초 간격으로 서버에 요청을 보냅니다.
-
 // 페이지 로드 시 저장된 시간 표시
 document.addEventListener('DOMContentLoaded', () => {
     const installTime = localStorage.getItem('installTime');
