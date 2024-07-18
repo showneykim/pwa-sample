@@ -3,6 +3,16 @@ const fs = require('fs-extra');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const session = require('express-session');
+
+const {
+    generateRegistrationOptions,
+    verifyRegistrationResponse,
+    generateAuthenticationOptions,
+    verifyAuthenticationResponse
+} = require('@simplewebauthn/server');
+const { isoUint8Array } = require('@simplewebauthn/server/helpers');
+
 
 
 const app = express();
@@ -100,4 +110,82 @@ app.get('/generate-keys', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
+});
+
+
+// --------------------------------------------------------------------------------
+
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true
+}));
+
+// In-memory store for simplicity
+let user = {
+    id: 'unique-user-id',
+    username: 'user@example.com',
+    devices: []
+};
+
+// Registration Options Endpoint
+app.get('/generate-registration-options', async (req, res) => {
+    const options = await generateRegistrationOptions({
+        rpName: 'Example RP',
+        rpID: 'localhost',
+        userID: isoUint8Array.fromUTF8String(user.id),
+        userName: user.username,
+    });
+    req.session.challenge = options.challenge;
+    res.json(options);
+});
+
+// Registration Verification Endpoint
+app.post('/verify-registration', async (req, res) => {
+    const { body } = req;
+    const expectedChallenge = req.session.challenge;
+
+    const verification = await verifyRegistrationResponse({
+        credential: body,
+        expectedChallenge,
+        expectedOrigin: 'http://localhost:3000',
+        expectedRPID: 'localhost',
+    });
+
+    if (verification.verified) {
+        user.devices.push(verification.registrationInfo);
+        res.json({ verified: true });
+    } else {
+        res.status(400).json({ verified: false });
+    }
+});
+
+// Authentication Options Endpoint
+app.get('/generate-authentication-options', (req, res) => {
+    const options = generateAuthenticationOptions({
+        rpID: 'localhost',
+        userVerification: 'preferred',
+    });
+    req.session.challenge = options.challenge;
+    res.json(options);
+});
+
+// Authentication Verification Endpoint
+app.post('/verify-authentication', async (req, res) => {
+    const { body } = req;
+    const expectedChallenge = req.session.challenge;
+
+    const verification = await verifyAuthenticationResponse({
+        credential: body,
+        expectedChallenge,
+        expectedOrigin: 'http://localhost:3000',
+        expectedRPID: 'localhost',
+        authenticator: user.devices[0], // In a real scenario, match the credentialId with stored devices
+    });
+
+    if (verification.verified) {
+        res.json({ verified: true });
+    } else {
+        res.status(400).json({ verified: false });
+    }
 });
