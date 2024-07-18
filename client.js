@@ -9,7 +9,7 @@ document.getElementById('register').addEventListener('click', async () => {
         const verificationResp = await fetch('http://localhost:3000/verify-registration', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(attResp),
+            body: JSON.stringify({ attResp, opts }),
         });
         const verificationJSON = await verificationResp.json();
         if (verificationJSON.verified) {

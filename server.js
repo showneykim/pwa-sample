@@ -143,12 +143,12 @@ app.get('/generate-registration-options', async (req, res) => {
 // Registration Verification Endpoint
 app.post('/verify-registration', async (req, res) => {
     const { body } = req;
-    const expectedChallenge = req.session.challenge;
+    const expectedChallenge = body.opts.challenge;
 
     const verification = await verifyRegistrationResponse({
-        credential: body,
+        response: body.attResp,
         expectedChallenge,
-        expectedOrigin: 'http://localhost:3000',
+        expectedOrigin: 'http://localhost:8080',
         expectedRPID: 'localhost',
     });
 
